@@ -33,3 +33,34 @@ async function searchContacts(e){
   const res = await api('SearchContacts.php', {userId, search});
   document.querySelector('#results').textContent = JSON.stringify(res.results, null, 2);
 }
+
+
+async function doRegister(e){
+  e.preventDefault();
+  const firstName = document.querySelector('#first').value.trim();
+  const lastName  = document.querySelector('#last').value.trim();
+  const login     = document.querySelector('#newLogin').value.trim();
+  const password  = document.querySelector('#newPassword').value.trim();
+  const out = document.querySelector('#regOut');
+
+  if(!firstName || !lastName || !login || !password){
+    out.textContent = 'Please fill out all fields.';
+    return;
+  }
+
+  try{
+    const res = await api('Register.php', { firstName, lastName, login, password });
+    if(res.error){
+      out.textContent = res.error;
+      return;
+    }
+    out.textContent = `Account created for ${firstName} ${lastName} (id=${res.id}). You can log in now.`;
+    // Prefill login form for convenience
+    const loginEl = document.querySelector('#login');
+    const passEl  = document.querySelector('#password');
+    if(loginEl) loginEl.value = login;
+    if(passEl)  passEl.value  = password;
+  }catch(err){
+    out.textContent = 'Network error while registering.';
+  }
+}
