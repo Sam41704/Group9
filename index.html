@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Contact Manager – Home</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script defer src="/js/md5.js"></script>
+  <script defer src="/js/code.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a> · <a href="/color.html">Color Demo</a>
+  </nav>
+
+  <h1>Contact Manager – Home</h1>
+  <p class="notice">This is a minimal frontend wired to your LAMP API. Replace with your team UI later.</p>
+
+  <h2>Login</h2>
+  <form onsubmit="doLogin(event)">
+    <input id="login" placeholder="login">
+    <input id="password" type="password" placeholder="password">
+    <button>Login</button>
+  </form>
+  <p id="out"></p>
+</body>
+</html>
