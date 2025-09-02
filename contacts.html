@@ -4,14 +4,24 @@
   <meta charset="utf-8" />
   <title>Contact Manager – My Contacts</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <script defer src="/js/md5.js"></script>
-  <script defer src="/js/code.js"></script>
   <script defer src="/js/contacts.js"></script>
+  <style>
+    .bar { display:flex; gap:1rem; align-items:center; justify-content:space-between; }
+    .actions { display:flex; gap:.5rem; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: .5rem; text-align: left; }
+    thead th { background: #f3f3f3; }
+    .muted { color:#666; font-size:.9rem; }
+    .right { float:right; }
+    .btn { padding:.4rem .7rem; border:1px solid #bbb; background:#eee; cursor:pointer; }
+    .btn:hover { background:#e4e4e4; }
+    form input { width:100%; margin:.35rem 0; padding:.55rem; }
+  </style>
 </head>
 <body>
-  <nav>
-    <a href="/">Home</a> · <a href="/contacts.html">My Contacts</a>
-    <span id="who" style="float:right;"></span>
+  <nav class="bar">
+    <div><a href="/">Home</a> · <strong>My Contacts</strong></div>
+    <span id="who" class="muted"></span>
   </nav>
 
   <h1>My Contacts</h1>
@@ -24,19 +34,39 @@
       <input id="cLast" placeholder="last name" required>
       <input id="cPhone" placeholder="phone">
       <input id="cEmail" placeholder="email">
-      <button>Save</button>
-      <button type="button" onclick="resetForm()">Clear</button>
+      <div class="actions">
+        <button class="btn">Save</button>
+        <button type="button" class="btn" onclick="resetForm()">Clear</button>
+      </div>
     </form>
-    <p id="saveOut"></p>
+    <p id="saveOut" class="muted"></p>
   </section>
 
   <section>
     <h2>Search</h2>
-    <form onsubmit="searchContacts(event)">
-      <input id="search" placeholder="name, phone, or email">
-      <button>Search</button>
+    <form class="bar" onsubmit="searchContacts(event)">
+      <input id="search" placeholder="name, phone, or email" style="flex:1">
+      <div class="actions">
+        <button class="btn">Search</button>
+        <button class="btn" type="button" onclick="searchContacts()">Refresh</button>
+      </div>
     </form>
-    <pre id="results"></pre>
+    <div id="resultsWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>First</th>
+            <th>Last</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th style="width:160px">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+          <tr><td colspan="5" class="muted">(no results)</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 </body>
 </html>

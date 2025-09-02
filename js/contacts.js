@@ -1,3 +1,5 @@
+let user = null;
+
 async function api(path, body){
   const r = await fetch(`/LAMPAPI/${path}`, {
     method: 'POST',
@@ -7,8 +9,6 @@ async function api(path, body){
   if(!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
 }
-
-let user = null;
 
 function getUser(){
   if(user) return user;
@@ -80,6 +80,48 @@ async function saveContact(e){
   }
 }
 
+function esc(s){
+  return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderResults(rows){
+  const tbody = document.querySelector('#resultsBody');
+  tbody.innerHTML = '';
+  if(!rows || !rows.length){
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 5; td.className='muted'; td.textContent='(no results)';
+    tr.appendChild(td); tbody.appendChild(tr);
+    return;
+  }
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.dataset.id = r.id;
+
+    const tdFirst = document.createElement('td'); tdFirst.textContent = r.firstName || ''; tr.appendChild(tdFirst);
+    const tdLast  = document.createElement('td'); tdLast.textContent  = r.lastName || '';  tr.appendChild(tdLast);
+    const tdPhone = document.createElement('td'); tdPhone.textContent = r.phone || '';    tr.appendChild(tdPhone);
+    const tdEmail = document.createElement('td'); tdEmail.textContent = r.email || '';    tr.appendChild(tdEmail);
+
+    const tdAct = document.createElement('td');
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn'; editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', () => {
+      editContact(r);
+    });
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn'; delBtn.textContent = 'Delete';
+    delBtn.addEventListener('click', () => {
+      deleteContact(r.id);
+    });
+    tdAct.appendChild(editBtn);
+    tdAct.appendChild(delBtn);
+    tr.appendChild(tdAct);
+
+    tbody.appendChild(tr);
+  });
+}
+
 async function searchContacts(e){
   if(e) e.preventDefault();
   const u = requireUser(); if(!u) return;
@@ -87,22 +129,15 @@ async function searchContacts(e){
   const term = document.querySelector('#search').value.trim();
   try{
     const res = await api('SearchContacts.php', { userId: u.id, search: term });
-    if(res.error){ document.querySelector('#results').textContent = res.error; return; }
-    if(!res.results || !res.results.length){ document.querySelector('#results').textContent = '(no matches)'; return; }
-
-    const lines = res.results.map(r => {
-      return `${r.firstName} ${r.lastName} — ${r.phone || ''} ${r.email || ''} [id:${r.id}]
-  [Edit] click to load form → editContact(${r.id}, ${JSON.stringify(r).replace(/"/g,'&quot;')})
-  [Delete] click to remove → deleteContact(${r.id})`;
-    });
-    document.querySelector('#results').textContent = lines.join('\n\n');
+    if(res.error){ renderResults([]); document.querySelector('#resultsBody').innerHTML = `<tr><td colspan="5" class="muted">${esc(res.error)}</td></tr>`; return; }
+    renderResults(res.results);
   }catch(err){
-    document.querySelector('#results').textContent = 'Network error.';
+    document.querySelector('#resultsBody').innerHTML = '<tr><td colspan="5" class="muted">Network error.</td></tr>';
   }
 }
 
-function editContact(id, data){
-  document.querySelector('#contactId').value = id;
+function editContact(data){
+  document.querySelector('#contactId').value = data.id || '';
   document.querySelector('#cFirst').value = data.firstName || '';
   document.querySelector('#cLast').value  = data.lastName || '';
   document.querySelector('#cPhone').value = data.phone || '';
