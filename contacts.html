@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Contact Manager – My Contacts</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script defer src="/js/md5.js"></script>
+  <script defer src="/js/code.js"></script>
+  <script defer src="/js/contacts.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a> · <a href="/contacts.html">My Contacts</a>
+    <span id="who" style="float:right;"></span>
+  </nav>
+
+  <h1>My Contacts</h1>
+
+  <section>
+    <h2>Add / Edit Contact</h2>
+    <form onsubmit="saveContact(event)">
+      <input type="hidden" id="contactId">
+      <input id="cFirst" placeholder="first name" required>
+      <input id="cLast" placeholder="last name" required>
+      <input id="cPhone" placeholder="phone">
+      <input id="cEmail" placeholder="email">
+      <button>Save</button>
+      <button type="button" onclick="resetForm()">Clear</button>
+    </form>
+    <p id="saveOut"></p>
+  </section>
+
+  <section>
+    <h2>Search</h2>
+    <form onsubmit="searchContacts(event)">
+      <input id="search" placeholder="name, phone, or email">
+      <button>Search</button>
+    </form>
+    <pre id="results"></pre>
+  </section>
+</body>
+</html>

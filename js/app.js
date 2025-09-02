@@ -10,11 +10,20 @@ async function doLogin(e){
   e.preventDefault();
   const login = document.querySelector('#login').value.trim();
   const password = document.querySelector('#password').value.trim();
-  const res = await api('Login.php', {login, password});
+  const res = await api('Login.php', { login, password });
   const out = document.querySelector('#out');
-  if(res.error){ out.textContent = res.error; return; }
-  out.textContent = `Welcome ${res.firstName} ${res.lastName} (id=${res.id})`;
+  if(res.error){
+    out.textContent = res.error;
+    return;
+  }
+  localStorage.setItem('cmUser', JSON.stringify({
+    id: res.id,
+    firstName: res.firstName,
+    lastName: res.lastName
+  }));
+  window.location.href = '/contacts.html'; 
 }
+
 async function addContact(e){
   e.preventDefault();
   const userId = Number(document.querySelector('#userId').value);
