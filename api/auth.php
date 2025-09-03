@@ -31,7 +31,6 @@ if ($method !== "POST"){
             "errType" => "ServerError",
             "desc" => "Failed to make DB connection"
         ]);
-        echo $e;
         exit();
     }
 
@@ -45,6 +44,7 @@ if ($method !== "POST"){
             "errType" => json_last_error(),
             "desc" => "Invalid payload sent"
         ]);
+        exit();
     }
 
     if (isset($payload["username"], $payload["password"]) === false){
