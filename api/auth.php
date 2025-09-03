@@ -14,17 +14,16 @@ if ($method !== "POST"){
     http_response_code(400);
     echo json_encode($data);
 }else{
-    // setting up db connection
-//    $dbUser = getenv("CONTACTS_APP_DB_USER");
-//    $dbPassword = getenv("CONTACTS_APP_DB_PASS");
-//    $dbName = getenv("CONTACTS_APP_DB_NAME");
-//    $db = new mysqli("localhost", $dbUser, $dbPassword, $dbName);
+
 
     try{
-        $dbUser = getenv("user");
-        $dbPassword = getenv("pass");
-        $dbName = getenv("contactsApp");
-        $db = new mysqli("127.0.0.1", $dbUser, $dbPassword, $dbName);
+        // setting up db connection
+        $dbUser = getenv("CONTACTS_APP_DB_USER");
+        $dbPassword = getenv("CONTACTS_APP_DB_PASS");
+        $dbName = getenv("CONTACTS_APP_DB_NAME");
+        $db = new mysqli("localhost", $dbUser, $dbPassword, $dbName);
+
+
     } catch (Exception $e){
         http_response_code(500);
         echo json_encode([
