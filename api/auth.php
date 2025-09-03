@@ -1,0 +1,98 @@
+<?php
+
+header("Content-Type: application/json");
+
+$method = $_SERVER["REQUEST_METHOD"];
+
+if ($method !== "POST"){
+    $data = [
+        "status" => "ERROR",
+        "errType" => "INVALID_REQUEST",
+        "desc" => "Method $method is invalid"
+    ];
+
+    http_response_code(400);
+    echo json_encode($data);
+}else{
+    // setting up db connection
+//    $dbUser = getenv("CONTACTS_APP_DB_USER");
+//    $dbPassword = getenv("CONTACTS_APP_DB_PASS");
+//    $dbName = getenv("CONTACTS_APP_DB_NAME");
+//    $db = new mysqli("localhost", $dbUser, $dbPassword, $dbName);
+
+    try{
+        $dbUser = getenv("user");
+        $dbPassword = getenv("pass");
+        $dbName = getenv("contactsApp");
+        $db = new mysqli("127.0.0.1", $dbUser, $dbPassword, $dbName);
+    } catch (Exception $e){
+        http_response_code(500);
+        echo json_encode([
+            "status" => "error",
+            "errType" => "ServerError",
+            "desc" => "Failed to make DB connection"
+        ]);
+        echo $e;
+        exit();
+    }
+
+    $payload = getRequestPayload();
+    // handling invalid payload errors
+    if (json_last_error() != JSON_ERROR_NONE){
+        http_response_code(400);
+
+        echo json_encode([
+            "status" => "ERROR",
+            "errType" => json_last_error(),
+            "desc" => "Invalid payload sent"
+        ]);
+    }
+
+    if (isset($payload["username"], $payload["password"]) === false){
+        http_response_code(400);
+        echo json_encode([
+            "status" => "ERROR",
+            "errType" => "InvalidSchema",
+            "desc" => "Invalid request schema"
+        ]);
+        exit();
+    }
+
+    $query = $db->prepare("SELECT ID, FirstName, LastName FROM Users WHERE (Login=? AND Password=?)");
+    $query->bind_param("ss", $payload["username"], $payload["password"]);
+
+    // TODO wrap in try-catch
+    $query->execute();
+    $result = $query->get_result();
+
+    processQueryResult($result);
+
+    $query->close();
+    $db->close();
+}
+
+function getRequestPayload(){
+    return json_decode(file_get_contents("php://input"), true);
+}
+
+function processQueryResult($result){
+
+    if ($row = $result->fetch_assoc()) {
+        http_response_code(200);
+
+        echo json_encode([
+            "status" => "success",
+            "isAuthenticated" => true,
+            "firstName" => $row["FirstName"],
+            "lastName" => $row["LastName"],
+            "userId" => $row["ID"]
+        ]);
+    }else{
+        http_response_code(200);
+
+        echo json_encode([
+            "status" => "success",
+            "isAuthenticated" => false
+        ]);
+    }
+}
