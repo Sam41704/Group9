@@ -2,6 +2,9 @@ name: deploy
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    types: [ "closed" ]
 
 jobs:
   deploy:
@@ -18,7 +21,7 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_KEY:  ${{ secrets.SSH_KEY }}
-        run: |
+        run: | # command to upload repo files on server
           eval "$(ssh-agent -s)"
           ssh-add - <<< "$SSH_KEY"
           rsync -az --delete -e "ssh -o StrictHostKeyChecking=no" \
