@@ -1,0 +1,92 @@
+:root {
+  --bs-primary: #1547cf; /*primary blue*/
+  --bs-body-font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Background JPG */
+body {
+  background: url("/images/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+}
+
+/* Layout */
+main.container { max-width: 680px; margin: 1.25rem auto 2rem; }
+h1 { font-size: 1.75rem; margin: .25rem 0 1rem; }
+h2 { font-size: 1.25rem; margin: 1rem 0 .5rem; }
+section + section { margin-top: 1rem; }
+
+/* Navbar */
+.navbar {
+  background: transparent !important;
+  box-shadow: none;
+  padding: .75rem 0;
+}
+.navbar .container {
+  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.12));
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  padding: .5rem .85rem;
+  transition: all .25s ease;
+}
+.navbar .navbar-brand,
+.navbar .nav-link {
+  color: #fff !important;
+  font-weight: 500;
+}
+.navbar .nav-link:hover { text-decoration: underline; }
+
+/* Card Styling */
+.card {
+  border: 1px solid rgba(16, 24, 40, .06);
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(16, 24, 40, .08);
+}
+.card .card-body { padding: 1.1rem 1.1rem; }
+
+
+/* Input Field Outline */
+.form-control:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 .18rem rgba(30, 99, 166, .15);
+}
+
+/* Custom purple outline for Login button */
+.btn-outline-purple {
+  color: #6f42c1;
+  border: 2px solid #6f42c1;
+  font-weight: 500;
+  background: transparent;
+  transition: all .2s ease;
+}
+.btn-outline-purple:hover {
+  background: #6f42c1;
+  color: #fff;
+  border-color: #6f42c1;
+}
+
+/* Custom dark blue outline for Create Account button */
+.btn-outline-darkblue {
+  color: #1547cf; /* deep dark blue */
+  border: 2px solid #1547cf;
+  font-weight: 500;
+  background: transparent;
+  transition: all .2s ease;
+}
+.btn-outline-darkblue:hover {
+  background: #1547cf;
+  color: #fff;
+  border-color: #1547cf;
+}
+
+.table td, .table th { vertical-align: middle; }
+
+footer {
+  color: #6c757d;
+  font-size: .9rem;
+  /*Footer Text*/ 
+  padding: 1.5rem 0;
+}
