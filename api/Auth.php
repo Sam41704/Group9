@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 header("Content-Type: application/json");
 
@@ -57,26 +58,27 @@ try{
     exit();
 }
 
-$query = $db->prepare("SELECT ID, FirstName, LastName FROM Users WHERE (Login=? AND Password=?)");
-$query->bind_param("ss", $payload["username"], $payload["passwordHash"]);
+$query = $db->prepare("SELECT ID, FirstName, LastName, Password FROM Users WHERE (Login=?) LIMIT 1");
+$query->bind_param("s", $payload["username"]);
 
 // TODO wrap in try-catch
 $query->execute();
 $result = $query->get_result();
 
-processQueryResult($result);
+processQueryResult($result, $payload["passwordHash"]);
 
 $query->close();
 $db->close();
 
 
-function getRequestPayload(){
+function getRequestPayload(): array{
     return json_decode(file_get_contents("php://input"), true);
 }
 
-function processQueryResult($result){
+function processQueryResult(mysqli_result $result, string $passHash){
 
-    if ($row = $result->fetch_assoc()) {
+    $row = $result->fetch_assoc();
+    if ($row && $row["Password"] === $passHash) { // user is auth'd
         http_response_code(200);
 
         echo json_encode([
@@ -86,12 +88,21 @@ function processQueryResult($result){
             "lastName" => $row["LastName"],
             "userId" => $row["ID"]
         ]);
-    }else{
+    } elseif($row){ // user exists put password is incorrect
+        http_response_code(200);
+
+        echo json_encode([
+            "status"=> "success",
+            "isAuthenticated" => false,
+            "userExists" => true
+        ]);
+    } else{ // sent user does not exist
         http_response_code(200);
 
         echo json_encode([
             "status" => "success",
-            "isAuthenticated" => false
+            "isAuthenticated" => false,
+            "userExists" => false
         ]);
     }
 }
