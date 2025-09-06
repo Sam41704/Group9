@@ -12,9 +12,7 @@
   <!-- Theme overrides -->
   <link rel="stylesheet" href="/css/theme.css">
 
-  <!-- Your scripts -->
-  <script defer src="/js/md5.js"></script>
-  <script defer src="/js/code.js"></script>
+  <!-- JS Script -->
   <script defer src="/js/app.js"></script>
 </head>
 
@@ -50,19 +48,20 @@
       </a>
       <div class="d-flex align-items-center gap-3">
         <a class="nav-link" href="/contacts.html">My Contacts</a>
-        <a class="nav-link" href="/color.html">Color Demo</a>
       </div>
     </div>
   </nav>
 
+    
   <main class="container">
     <section class="mb-4">
+      <!-- Login card -->
       <div class="card">
         <div class="card-body">
           <h2 class="h5">Login</h2>
           <form onsubmit="doLogin(event)" class="vstack gap-3 mt-2">
             <div>
-              <label for="login" class="form-label">Login</label>
+              <label for="login" class="form-label">Username</label>
               <input id="login" class="form-control" placeholder="username">
             </div>
             <div>
@@ -79,27 +78,31 @@
     </section>
 
     <section>
+      <!-- Register card -->
       <div class="card">
         <div class="card-body">
           <h2 class="h5">Register</h2>
           <form onsubmit="doRegister(event)" class="vstack gap-3 mt-2">
             <div class="row g-3">
               <div class="col-md">
-                <label for="first" class="form-label">First name</label>
+                <label for="first" class="form-label">First Name</label>
                 <input id="first" class="form-control" placeholder="first name" required>
               </div>
               <div class="col-md">
-                <label for="last" class="form-label">Last name</label>
+                <label for="last" class="form-label">Last Name</label>
                 <input id="last" class="form-control" placeholder="last name" required>
               </div>
             </div>
             <div>
-              <label for="newLogin" class="form-label">Login</label>
-              <input id="newLogin" class="form-control" placeholder="new login" required>
+              <label for="newLogin" class="form-label">Username</label>
+              <input id="newLogin" class="form-control" placeholder="new username" required>
             </div>
             <div>
               <label for="newPassword" class="form-label">Password</label>
               <input id="newPassword" type="password" class="form-control" placeholder="new password" required>
+            </div>
+              <label for="newPassword" class="form-label">Confirm password</label>
+              <input id="newPassword" type="password" class="form-control" placeholder="confirm password" required>
             </div>
             <button id="regBtn" class="btn btn-outline-darkblue w-100">
               <i class="bi bi-person-plus me-1"></i> Create Account
@@ -138,7 +141,7 @@
     }
   </script>
 
-<!-- Shrink navbar script -->
+<!-- Shrink navbar upon scroll script -->
   <script>
   const nb = document.querySelector('.navbar .container');
   let small = false;
