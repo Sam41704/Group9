@@ -10,7 +10,7 @@ async function doLogin(e){
   e.preventDefault();
   const login = document.querySelector('#login').value.trim();
   const password = document.querySelector('#password').value.trim();
-  const res = await api('Login.php', { login, password });
+  const res = await api('Auth.php', { login, password });
   const out = document.querySelector('#out');
   if(res.error){
     out.textContent = res.error;
