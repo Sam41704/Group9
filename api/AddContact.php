@@ -75,7 +75,9 @@ if (contactExists($db, $payload)) {
     exit();
 }
 
-$query = $db->prepare("INSERT INTO contacts (FirstName, LastName, Phone, Email, UserId) VALUES (?,?,?,?,?)");
+
+$query = $db->prepare("INSERT INTO Contacts (FirstName, LastName, Phone, Email, UserId) VALUES (?,?,?,?,?)");
+
 $query->bind_param("ssssi",
     $payload["firstName"],
     $payload["lastName"],
