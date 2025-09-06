@@ -1,55 +1,27 @@
-async function api(path, body) {
+async function api(path, body){
   const r = await fetch(`/api/${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body || {})
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(body||{})
   });
-  let data;
-  try { data = await r.json(); }
-  catch { data = { status:'ERROR', errType:'BadResponse', desc:'Non-JSON response' }; }
-  return data;
+  return r.json();
 }
-
-async function sha256Hex(str) {
-  const enc = new TextEncoder();
-  const buf = await crypto.subtle.digest('SHA-256', enc.encode(str));
-  //turn ArrayBuffer -> hex string
-  const bytes = new Uint8Array(buf);
-  return Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-//Login
-async function doLogin(e) {
+async function doLogin(e){
   e.preventDefault();
-  const username = document.querySelector('#login').value.trim();
-  const password = document.querySelector('#password').value;
+  const login = document.querySelector('#login').value.trim();
+  const password = document.querySelector('#password').value.trim();
+  const res = await api('Auth.php', { login, password });
   const out = document.querySelector('#out');
-  if (!username || !password) {
-    out.textContent = 'Please enter your username and password.';
+  if(res.error){
+    out.textContent = res.error;
     return;
   }
-  try {
-    const passwordHash = await sha256Hex(password);
-    const res = await api('Auth.php', { username, passwordHash });
-    //normalize success/error:
-    if (res.status === 'OK' || res.id || res.userId) {
-      //Build a user object to store—adjust keys depending on API response
-      const user = {
-        id: res.id || res.userId,
-        firstName: res.firstName || res.fName || '',
-        lastName: res.lastName || res.lName || '',
-        username
-      };
-      localStorage.setItem('cmUser', JSON.stringify(user));
-      out.textContent = `Welcome, ${user.firstName || username}! Redirecting...`;
-      //navigate to contacts page
-      window.location.href = '/contacts.html';
-    } else {
-      out.textContent = res.desc || res.error || 'Login failed.';
-    }
-  } catch (err) {
-    out.textContent = 'Network error while logging in.';
-  }
+  localStorage.setItem('cmUser', JSON.stringify({
+    id: res.id,
+    firstName: res.firstName,
+    lastName: res.lastName
+  }));
+  window.location.href = '/contacts.html'; 
 }
 
 async function addContact(e){
@@ -71,46 +43,33 @@ async function searchContacts(e){
   document.querySelector('#results').textContent = JSON.stringify(res.results, null, 2);
 }
 
-//Register
-async function doRegister(e) {
+
+async function doRegister(e){
   e.preventDefault();
-  const firstName = document.querySelector('#firstName').value.trim();
-  const lastName = document.querySelector('#lastName').value.trim();
-  const username = document.querySelector('#regUsername').value.trim();
-  const password = document.querySelector('#regPassword').value;
-  const confirm  = document.querySelector('#regConfirm').value;
-  const out = document.querySelector('#registerOut');
-  if (!firstName || !lastName || !username || !password) {
+  const firstName = document.querySelector('#first').value.trim();
+  const lastName  = document.querySelector('#last').value.trim();
+  const login     = document.querySelector('#newLogin').value.trim();
+  const password  = document.querySelector('#newPassword').value.trim();
+  const out = document.querySelector('#regOut');
+
+  if(!firstName || !lastName || !login || !password){
     out.textContent = 'Please fill out all fields.';
     return;
   }
-  if (password !== confirm) {
-    out.textContent = 'Passwords do not match.';
-    return;
-  }
-  try {
-    const passwordHash = await sha256Hex(password);
-    const res = await api('Register.php', { firstName, lastName, username, passwordHash });
 
-    if (res.status === 'OK' || res.id || res.userId) {
-      out.textContent = `Account created for ${firstName} ${lastName}. You can log in now.`;
-      //optionally prefill login form if it exists on the same page:
-      const loginEl = document.querySelector('#login');
-      const passEl  = document.querySelector('#password');
-      if (loginEl) loginEl.value = username;
-      if (passEl)  passEl.value  = password;
-    } else {
-      out.textContent = res.desc || res.error || 'Registration failed.';
+  try{
+    const res = await api('Register.php', { firstName, lastName, login, password });
+    if(res.error){
+      out.textContent = res.error;
+      return;
     }
-  } catch (err) {
+    out.textContent = `Account created for ${firstName} ${lastName} (id=${res.id}). You can log in now.`;
+    // Prefill login form for convenience
+    const loginEl = document.querySelector('#login');
+    const passEl  = document.querySelector('#password');
+    if(loginEl) loginEl.value = login;
+    if(passEl)  passEl.value  = password;
+  }catch(err){
     out.textContent = 'Network error while registering.';
   }
 }
-
-// -------- wire up on DOM ready --------
-document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = document.querySelector('#loginForm');
-  const registerForm = document.querySelector('#registerForm');
-  if (loginForm) loginForm.addEventListener('submit', doLogin);
-  if (registerForm) registerForm.addEventListener('submit', doRegister);
-});
