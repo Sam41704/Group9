@@ -92,6 +92,7 @@ try{
     echo json_encode([
         "status" => "success",
         "contactCreated" => true,
+        "contactId" => $query->insert_id
     ]);
 } catch (Exception $e){
     $errMessage = $e->getMessage();
