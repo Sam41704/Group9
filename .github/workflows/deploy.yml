@@ -1,0 +1,29 @@
+name: deploy
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    types: [ "closed" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+      - name: Rsync
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY:  ${{ secrets.SSH_KEY }}
+        run: | # command to upload repo files on server
+          eval "$(ssh-agent -s)"
+          ssh-add - <<< "$SSH_KEY"
+          rsync -az --delete -e "ssh -o StrictHostKeyChecking=no" \
+            --exclude ".git" --exclude ".github" \
+            ./ "$SSH_USER@$SSH_HOST:/var/www/html/"
