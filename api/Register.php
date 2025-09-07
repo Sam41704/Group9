@@ -5,8 +5,8 @@ $method = $_SERVER["REQUEST_METHOD"];
 
 if ($method !== "POST"){
     $data = [
-        "status" => "ERROR",
-        "errType" => "INVALID_REQUEST",
+        "status" => "error",
+        "errType" => "InvalidRequest",
         "desc" => "Method $method is invalid"
     ];
 
@@ -22,7 +22,7 @@ if (json_last_error() != JSON_ERROR_NONE){
     http_response_code(400);
 
     echo json_encode([
-        "status" => "ERROR",
+        "status" => "error",
         "errType" => "InvalidJson",
         "desc" => "Invalid payload sent"
     ]);
@@ -35,7 +35,7 @@ if (isset($payload["firstName"],
         $payload["passwordHash"]) === false){
     http_response_code(400);
     echo json_encode([
-        "status" => "ERROR",
+        "status" => "error",
         "errType" => "InvalidSchema",
         "desc" => "Invalid request schema"
     ]);
@@ -90,7 +90,6 @@ if ($query->execute()){
     echo json_encode([
         "status" => "error",
         "userCreated" => false,
-        "reason" => "UserCreationError",
         "errType" => "UserCreationError",
         "desc" => "Failed to create user"
     ]);
