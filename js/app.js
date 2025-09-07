@@ -18,7 +18,7 @@ async function sha256Hex(str) {
   return Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-//Login
+// Login
 async function doLogin(e) {
   e.preventDefault();
   const username = document.querySelector('#login').value.trim();
@@ -31,22 +31,33 @@ async function doLogin(e) {
   try {
     const passwordHash = await sha256Hex(password);
     const res = await api('Auth.php', { username, passwordHash });
-    //normalize success/error:
-    if (res.status === 'OK' || res.id || res.userId) {
-      //Build a user object to store—adjust keys depending on API response
+
+    // expect the new shape from Auth.php
+    if (res && res.status === 'success' && res.isAuthenticated === true && res.userId) {
       const user = {
-        id: res.id || res.userId,
-        firstName: res.firstName || res.fName || '',
-        lastName: res.lastName || res.lName || '',
+        id: res.userId,
+        firstName: res.firstName || '',
+        lastName: res.lastName || '',
         username
       };
       localStorage.setItem('cmUser', JSON.stringify(user));
       out.textContent = `Welcome, ${user.firstName || username}! Redirecting...`;
-      //navigate to contacts page
       window.location.href = '/contacts.html';
-    } else {
-      out.textContent = res.desc || res.error || 'Login failed.';
+      return;
     }
+
+    // handle failure cases
+    if (res && res.status === 'success' && res.isAuthenticated === false) {
+      if (res.userExists === false) {
+        out.textContent = 'No account found for that username.';
+      } else {
+        out.textContent = 'Incorrect password.';
+      }
+      return;
+    }
+
+    // fallback
+    out.textContent = res?.desc || res?.error || 'Login failed.';
   } catch (err) {
     out.textContent = 'Network error while logging in.';
   }
@@ -71,7 +82,7 @@ async function searchContacts(e){
   document.querySelector('#results').textContent = JSON.stringify(res.results, null, 2);
 }
 
-//Register
+// Register
 async function doRegister(e) {
   e.preventDefault();
   const firstName = document.querySelector('#firstName').value.trim();
@@ -80,6 +91,7 @@ async function doRegister(e) {
   const password = document.querySelector('#regPassword').value;
   const confirm  = document.querySelector('#regConfirm').value;
   const out = document.querySelector('#registerOut');
+
   if (!firstName || !lastName || !username || !password) {
     out.textContent = 'Please fill out all fields.';
     return;
@@ -88,20 +100,27 @@ async function doRegister(e) {
     out.textContent = 'Passwords do not match.';
     return;
   }
+
   try {
     const passwordHash = await sha256Hex(password);
     const res = await api('Register.php', { firstName, lastName, username, passwordHash });
 
-    if (res.status === 'OK' || res.id || res.userId) {
+    // expect the new shape from Register.php
+    if (res && res.status === 'success' && res.userCreated === true) {
       out.textContent = `Account created for ${firstName} ${lastName}. You can log in now.`;
-      //optionally prefill login form if it exists on the same page:
       const loginEl = document.querySelector('#login');
       const passEl  = document.querySelector('#password');
       if (loginEl) loginEl.value = username;
       if (passEl)  passEl.value  = password;
-    } else {
-      out.textContent = res.desc || res.error || 'Registration failed.';
+      return;
     }
+
+    if (res && res.status === 'success' && res.userCreated === false && res.reason === 'UserAlreadyExists') {
+      out.textContent = 'That username is already taken.';
+      return;
+    }
+
+    out.textContent = res?.desc || res?.error || 'Registration failed.';
   } catch (err) {
     out.textContent = 'Network error while registering.';
   }
