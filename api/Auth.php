@@ -48,12 +48,12 @@ try{
     $dbUser = getenv("CONTACTS_APP_DB_USER");
     $dbPassword = getenv("CONTACTS_APP_DB_PASS");
     $dbName = getenv("CONTACTS_APP_DB_NAME");
-    $db = new mysqli("localhost", $dbUser, $dbPassword, $dbName);
+    $db = new mysqli("127.0.0.1", $dbUser, $dbPassword, $dbName);
     $db->set_charset('utf8mb4');
   // sanity check for missing envs
-    if ($dbUser === "" || $dbName === "") {
-        throw new RuntimeException("DB env vars are empty (user/dbname).");
-    }
+    if (empty($dbUser) || $dbPassword === false || empty($dbName)) {
+    throw new RuntimeException("DB env vars are missing/empty.");
+}
 
 } catch (Throwable $e){
     http_response_code(500);
@@ -81,13 +81,13 @@ $db->close();
 
 
 function getRequestPayload(): array{
-    return json_decode(file_get_contents("php://input"), true);
+    return json_decode(file_get_contents("php://input"), true) ?? [];
 }
 
 function processQueryResult(mysqli_result $result, string $passHash){
 
     $row = $result->fetch_assoc();
-    if ($row && $row["Password"] === $passHash) { // user is auth'd
+    if ($row && hash_equals($row["Password"], $passHash)) { // user is auth'd
         http_response_code(200);
 
         echo json_encode([
