@@ -61,7 +61,9 @@ try{
     echo json_encode([
         "status" => "error",
         "errType" => "ServerError",
-        "desc" => "Failed to make DB connection"
+          //temporarily commenting out the error desc
+      //  "desc" => "Failed to make DB connection"
+      "desc"  => $e->getMessage();
     ]);
     exit();
 }
