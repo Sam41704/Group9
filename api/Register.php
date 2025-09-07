@@ -56,14 +56,13 @@ try{
         throw new RuntimeException("DB env vars are empty (user/dbname).");
     }
 } catch(Throwable $e){
-    error_log("DB connect failed: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         "status" => "error",
         "errType" => "ServerError",
           //temporarily commenting out the error desc
       //  "desc" => "Failed to make DB connection"
-      "desc"  => $e->getMessage();
+      "desc"  => $e->getMessage()
     ]);
     exit();
 }
