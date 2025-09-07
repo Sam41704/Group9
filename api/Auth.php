@@ -42,13 +42,21 @@ if (isset($payload["username"], $payload["passwordHash"]) === false){
 }
 
 try{
+// make mysqli throw exceptions v.s. silent failures
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 //     setting up db connection
     $dbUser = getenv("CONTACTS_APP_DB_USER");
     $dbPassword = getenv("CONTACTS_APP_DB_PASS");
     $dbName = getenv("CONTACTS_APP_DB_NAME");
     $db = new mysqli("localhost", $dbUser, $dbPassword, $dbName);
+    $db->set_charset('utf8mb4');
+  // sanity check for missing envs
+    if ($dbUser === "" || $dbName === "") {
+        throw new RuntimeException("DB env vars are empty (user/dbname).");
+    }
 
-} catch (Exception $e){
+} catch (Throwable $e){
+    error_log("DB connect failed: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         "status" => "error",
