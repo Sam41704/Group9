@@ -42,9 +42,9 @@ if (isset($payload["username"], $payload["passwordHash"]) === false){
 }
 
 try{
-// make mysqli throw exceptions v.s. silent failures
+    // make mysqli throw exceptions v.s. silent failures
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-//     setting up db connection
+    // setting up db connection
     $dbUser = getenv("CONTACTS_APP_DB_USER");
     $dbPassword = getenv("CONTACTS_APP_DB_PASS");
     $dbName = getenv("CONTACTS_APP_DB_NAME");
