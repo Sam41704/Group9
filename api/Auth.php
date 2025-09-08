@@ -70,8 +70,30 @@ try{
 $query = $db->prepare("SELECT ID, FirstName, LastName, Password FROM Users WHERE (Login=?) LIMIT 1");
 $query->bind_param("s", $payload["username"]);
 
-// TODO wrap in try-catch
-$query->execute();
+
+
+try {
+    $query->execute();
+
+    http_response_code(200);
+    echo json_encode([
+        "status" => "success",
+        "userCreated" => true
+    ]);
+} catch (mysqli_sql_exception $e){
+    http_response_code(500);
+
+    $err = $e->getTraceAsString();
+    error_log("SQL query execution error: $err");
+
+    echo json_encode([
+        "status" => "error",
+        "isAuthenticated" => false,
+        "errType" => "UserAuthenticationError",
+        "desc" => "Failed to authenticate user"
+    ]);
+}
+
 $result = $query->get_result();
 
 processQueryResult($result, $payload["passwordHash"]);
