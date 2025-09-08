@@ -50,19 +50,14 @@ try{
     $dbName = getenv("CONTACTS_APP_DB_NAME");
     $db = new mysqli("127.0.0.1", $dbUser, $dbPassword, $dbName);
     $db->set_charset('utf8mb4');
-  // sanity check for missing envs
-    if (empty($dbUser) || $dbPassword === false || empty($dbName)) {
-    throw new RuntimeException("DB env vars are missing/empty.");
-}
 
-} catch (Throwable $e){
+
+} catch (Exception $e){
     http_response_code(500);
     echo json_encode([
         "status" => "error",
         "errType" => "ServerError",
-        //temporarily commenting out the error desc
-      //  "desc" => "Failed to make DB connection"
-      "desc"  => $e->getMessage()
+        "desc" => "Failed to make DB connection"
     ]);
     exit();
 }
@@ -71,15 +66,8 @@ $query = $db->prepare("SELECT ID, FirstName, LastName, Password FROM Users WHERE
 $query->bind_param("s", $payload["username"]);
 
 
-
 try {
     $query->execute();
-
-    http_response_code(200);
-    echo json_encode([
-        "status" => "success",
-        "userCreated" => true
-    ]);
 } catch (mysqli_sql_exception $e){
     http_response_code(500);
 
