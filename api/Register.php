@@ -49,14 +49,20 @@ try{
     $dbUser = getenv("CONTACTS_APP_DB_USER");
     $dbPassword = getenv("CONTACTS_APP_DB_PASS");
     $dbName = getenv("CONTACTS_APP_DB_NAME");
-    $db = new mysqli("localhost", $dbUser, $dbPassword, $dbName);
-
-} catch(Exception $e){
+   $db = new mysqli("127.0.0.1", $dbUser, $dbPassword, $dbName);
+    $db->set_charset('utf8mb4');
+  // sanity check for missing envs
+    if (empty($dbUser) || $dbPassword === false || empty($dbName)) {
+    throw new RuntimeException("DB env vars are missing/empty.");
+}
+} catch(Throwable $e){
     http_response_code(500);
     echo json_encode([
         "status" => "error",
         "errType" => "ServerError",
-        "desc" => "Failed to make DB connection"
+          //temporarily commenting out the error desc
+      //  "desc" => "Failed to make DB connection"
+      "desc"  => $e->getMessage()
     ]);
     exit();
 }
