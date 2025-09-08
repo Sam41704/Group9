@@ -42,27 +42,20 @@ if (isset($payload["username"], $payload["passwordHash"]) === false){
 }
 
 try{
-// make mysqli throw exceptions v.s. silent failures
+    // make mysqli throw exceptions v.s. silent failures
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-//     setting up db connection
+    // setting up db connection
     $dbUser = getenv("CONTACTS_APP_DB_USER");
     $dbPassword = getenv("CONTACTS_APP_DB_PASS");
     $dbName = getenv("CONTACTS_APP_DB_NAME");
-    $db = new mysqli("127.0.0.1", $dbUser, $dbPassword, $dbName);
-    $db->set_charset('utf8mb4');
-  // sanity check for missing envs
-    if (empty($dbUser) || $dbPassword === false || empty($dbName)) {
-    throw new RuntimeException("DB env vars are missing/empty.");
-}
+    $db = new mysqli("localhost", $dbUser, $dbPassword, $dbName);
 
-} catch (Throwable $e){
+} catch (Exception $e){
     http_response_code(500);
     echo json_encode([
         "status" => "error",
         "errType" => "ServerError",
-        //temporarily commenting out the error desc
-      //  "desc" => "Failed to make DB connection"
-      "desc"  => $e->getMessage()
+        "desc" => "Failed to make DB connection"
     ]);
     exit();
 }
