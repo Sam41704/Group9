@@ -49,10 +49,9 @@ try{
     $dbUser = getenv("CONTACTS_APP_DB_USER");
     $dbPassword = getenv("CONTACTS_APP_DB_PASS");
     $dbName = getenv("CONTACTS_APP_DB_NAME");
-    $db = new mysqli("127.0.0.1", $dbUser, $dbPassword, $dbName);
-    $db->set_charset('utf8mb4');
+    $db = new mysqli("localhost", $dbUser, $dbPassword, $dbName);
 
-} catch(Throwable $e){
+} catch(Exception $e){
     http_response_code(500);
     echo json_encode([
         "status" => "error",
@@ -90,6 +89,7 @@ try {
         "status" => "success",
         "userCreated" => true
     ]);
+
 } catch (mysqli_sql_exception $e){
     http_response_code(500);
 
