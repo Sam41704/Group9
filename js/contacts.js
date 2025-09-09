@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   //logout button hookup
   const lb = document.querySelector('#logoutBtn');
-  if (lb) lb.addEventListener('click', logout);
+  if (lb) lb.addEventListener('click', logoutBtn);
 
   searchContacts();
 });
