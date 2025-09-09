@@ -1,3 +1,4 @@
+
 async function api(path, body) {
   const r = await fetch(`/api/${path}`, {
     method: 'POST',
