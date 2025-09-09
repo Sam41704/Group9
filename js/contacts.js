@@ -33,8 +33,9 @@ function logout(){
   //clear locally stored user info
   localStorage.removeItem('cmUser');
   //redirect to index/login
-  window.location.href = '/index.html';
+  window.location.href = '/';
 }
+window.logout = logout; //make global
 
 window.addEventListener('DOMContentLoaded', () => {
   const u = requireUser();
