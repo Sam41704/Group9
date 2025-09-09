@@ -29,10 +29,22 @@ function requireUser(){
   return u;
 }
 
+function logout(){
+  //clear locally stored user info
+  localStorage.removeItem('cmUser');
+  //redirect to index/login
+  window.location.href = '/';
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   const u = requireUser();
   if(!u) return;
   document.querySelector('#who').textContent = `Signed in as ${u.firstName} ${u.lastName}`;
+
+  //logout button hookup
+  const lb = document.querySelector('#logoutBtn');
+  if (lb) lb.addEventListener('click', logout);
+
   searchContacts();
 });
 
