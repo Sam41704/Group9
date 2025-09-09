@@ -43,23 +43,22 @@
 <body>
   <nav class="navbar bg-body-tertiary">
   <div class="container flex-column align-items-start">
-    <!-- logo -->
+
     <a class="navbar-brand d-flex align-items-center gap-2" href="/">
       <i class="bi bi-journal-bookmark"></i> Contact Manager
     </a>
 
-    <!-- user info + logout -->
-    <div class="d-flex align-items-center gap-3 w-100" 
-    style="pointer-events:auto; position:relative; z-index:10;">
+    <div class="d-flex align-items-center gap-3 w-100 second-line">
       <span id="who" class="text-secondary"></span>
-      <button id="logoutBtn"type="button"
-      class="btn btn-outline-danger btn-sm ms-auto"
-      onclick="logout()">
+
+      <a id="logoutBtn" href="/" role="button"
+         class="btn btn-outline-danger btn-sm ms-auto">
         <i class="bi bi-box-arrow-right"></i> Log out
-      </button>
+      </a>
     </div>
   </div>
 </nav>
+
 
   <main class="container">
     <h1>My Contacts</h1>
