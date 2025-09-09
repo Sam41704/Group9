@@ -42,7 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#who').textContent = `Signed in as ${u.firstName} ${u.lastName}`;
 
   //logout button hookup
-  const lb = document.querySelector('#logoutBtn');
+  const lb = document.querySelector('logoutBtn');
   if (lb) lb.addEventListener('click', logout);
 
   searchContacts();
