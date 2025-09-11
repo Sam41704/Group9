@@ -7,8 +7,8 @@ $method = $_SERVER["REQUEST_METHOD"];
 
 if ($method !== "POST"){
     $data = [
-        "status" => "ERROR",
-        "errType" => "INVALID_REQUEST",
+        "status" => "error",
+        "errType" => "InvalidRequest",
         "desc" => "Method $method is invalid"
     ];
 
@@ -24,7 +24,7 @@ if (json_last_error() != JSON_ERROR_NONE){
     http_response_code(400);
 
     echo json_encode([
-        "status" => "ERROR",
+        "status" => "error",
         "errType" => "InvalidJson",
         "desc" => "Invalid payload sent"
     ]);
@@ -34,7 +34,7 @@ if (json_last_error() != JSON_ERROR_NONE){
 if (isset($payload["username"], $payload["passwordHash"]) === false){
     http_response_code(400);
     echo json_encode([
-        "status" => "ERROR",
+        "status" => "error",
         "errType" => "InvalidSchema",
         "desc" => "Invalid request schema"
     ]);
@@ -42,7 +42,9 @@ if (isset($payload["username"], $payload["passwordHash"]) === false){
 }
 
 try{
-//     setting up db connection
+    // make mysqli throw exceptions v.s. silent failures
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    // setting up db connection
     $dbUser = getenv("CONTACTS_APP_DB_USER");
     $dbPassword = getenv("CONTACTS_APP_DB_PASS");
     $dbName = getenv("CONTACTS_APP_DB_NAME");
@@ -61,8 +63,23 @@ try{
 $query = $db->prepare("SELECT ID, FirstName, LastName, Password FROM Users WHERE (Login=?) LIMIT 1");
 $query->bind_param("s", $payload["username"]);
 
-// TODO wrap in try-catch
-$query->execute();
+
+try {
+    $query->execute();
+} catch (mysqli_sql_exception $e){
+    http_response_code(500);
+
+    $err = $e->getTraceAsString();
+    error_log("SQL query execution error: $err");
+
+    echo json_encode([
+        "status" => "error",
+        "isAuthenticated" => false,
+        "errType" => "UserAuthenticationError",
+        "desc" => "Failed to authenticate user"
+    ]);
+}
+
 $result = $query->get_result();
 
 processQueryResult($result, $payload["passwordHash"]);
@@ -72,13 +89,13 @@ $db->close();
 
 
 function getRequestPayload(): array{
-    return json_decode(file_get_contents("php://input"), true);
+    return json_decode(file_get_contents("php://input"), true) ?? [];
 }
 
 function processQueryResult(mysqli_result $result, string $passHash){
 
     $row = $result->fetch_assoc();
-    if ($row && $row["Password"] === $passHash) { // user is auth'd
+    if ($row && hash_equals($row["Password"], $passHash)) { // user is auth'd
         http_response_code(200);
 
         echo json_encode([

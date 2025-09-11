@@ -5,8 +5,8 @@ $method = $_SERVER["REQUEST_METHOD"];
 
 if ($method !== "POST"){
     $data = [
-        "status" => "ERROR",
-        "errType" => "INVALID_REQUEST",
+        "status" => "error",
+        "errType" => "InvalidRequest",
         "desc" => "Method $method is invalid"
     ];
 
@@ -22,7 +22,7 @@ if (json_last_error() != JSON_ERROR_NONE){
     http_response_code(400);
 
     echo json_encode([
-        "status" => "ERROR",
+        "status" => "error",
         "errType" => "InvalidJson",
         "desc" => "Invalid payload sent"
     ]);
@@ -35,7 +35,7 @@ if (isset($payload["firstName"],
         $payload["passwordHash"]) === false){
     http_response_code(400);
     echo json_encode([
-        "status" => "ERROR",
+        "status" => "error",
         "errType" => "InvalidSchema",
         "desc" => "Invalid request schema"
     ]);
@@ -43,6 +43,9 @@ if (isset($payload["firstName"],
 }
 
 try{
+    // make mysqli throw exceptions v.s. silent failures
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    
     $dbUser = getenv("CONTACTS_APP_DB_USER");
     $dbPassword = getenv("CONTACTS_APP_DB_PASS");
     $dbName = getenv("CONTACTS_APP_DB_NAME");
@@ -77,20 +80,25 @@ $query->bind_param(
     $payload["username"],
     $payload["passwordHash"]);
 
-if ($query->execute()){
+
+try {
+    $query->execute();
+
     http_response_code(200);
     echo json_encode([
         "status" => "success",
         "userCreated" => true
     ]);
 
-}else{
-    http_response_code(400);
+} catch (mysqli_sql_exception $e){
+    http_response_code(500);
+
+    $err = $e->getTraceAsString();
+    error_log("SQL query execution error: $err");
 
     echo json_encode([
         "status" => "error",
         "userCreated" => false,
-        "reason" => "UserCreationError",
         "errType" => "UserCreationError",
         "desc" => "Failed to create user"
     ]);
@@ -115,6 +123,6 @@ function userExists(mysqli $conn, string $user) {
     return $returnValue;
 }
 
-function getRequestPayload(){
-    return json_decode(file_get_contents("php://input"), true);
+function getRequestPayload(): array{
+    return json_decode(file_get_contents("php://input"), true) ?? [];
 }

@@ -42,13 +42,23 @@
 
 <body>
   <nav class="navbar bg-body-tertiary">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-        <i class="bi bi-journal-bookmark"></i> Contact Manager
-      </a>
+  <div class="container flex-column align-items-start">
+
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <i class="bi bi-journal-bookmark"></i> Contact Manager
+    </a>
+
+    <div class="d-flex align-items-center gap-3 w-100 second-line">
       <span id="who" class="text-secondary"></span>
+
+      <a id="logoutBtn" href="/" role="button"
+         class="btn btn-outline-danger btn-sm ms-auto">
+        <i class="bi bi-box-arrow-right"></i> Log out
+      </a>
     </div>
-  </nav>
+  </div>
+</nav>
+
 
   <main class="container">
     <h1>My Contacts</h1>
