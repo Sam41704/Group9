@@ -1,4 +1,3 @@
-
 async function api(path, body) {
   const r = await fetch(`/api/${path}`, {
     method: 'POST',
@@ -92,7 +91,6 @@ async function doRegister(e) {
   const password = document.querySelector('#regPassword').value;
   const confirm  = document.querySelector('#regConfirm').value;
   const out = document.querySelector('#registerOut');
-
   if (!firstName || !lastName || !username || !password) {
     out.textContent = 'Please fill out all fields.';
     return;

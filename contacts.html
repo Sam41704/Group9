@@ -43,14 +43,11 @@
 <body>
   <nav class="navbar bg-body-tertiary">
   <div class="container flex-column align-items-start">
-
     <a class="navbar-brand d-flex align-items-center gap-2" href="/">
       <i class="bi bi-journal-bookmark"></i> Contact Manager
     </a>
-
-    <div class="d-flex align-items-center gap-3 w-100 second-line">
+    <div class="d-flex align-items-center gap-3">
       <span id="who" class="text-secondary"></span>
-
       <a id="logoutBtn" href="/" role="button"
          class="btn btn-outline-danger btn-sm ms-auto">
         <i class="bi bi-box-arrow-right"></i> Log out
@@ -61,8 +58,6 @@
 
 
   <main class="container">
-    <h1>My Contacts</h1>
-
     <!-- Add / Edit -->
     <section class="mb-4">
       <div class="card">
@@ -72,11 +67,11 @@
             <input type="hidden" id="contactId">
             <div class="col-md-6">
               <label for="cFirst" class="form-label">First name</label>
-              <input id="cFirst" class="form-control" required>
+              <input id="cFirst" class="form-control" placeholder="first name" required>
             </div>
             <div class="col-md-6">
               <label for="cLast" class="form-label">Last name</label>
-              <input id="cLast" class="form-control" required>
+              <input id="cLast" class="form-control" placeholder="last name" required>
             </div>
             <div class="col-md-6">
               <label for="cPhone" class="form-label">Phone</label>
