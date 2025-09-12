@@ -12,6 +12,14 @@
   <!-- Theme overrides -->
   <link rel="stylesheet" href="/css/theme.css">
 
+  <!-- LOCAL TESTING SCRIPT. REMOVE. -->
+  <script>
+  if ((location.hostname === '127.0.0.1' || location.hostname === 'localhost') &&
+      !localStorage.getItem('cmUser')) {
+    localStorage.setItem('cmUser', JSON.stringify({id: 1, firstName:'Dev', lastName:'User', username:'dev'}));
+  }
+</script>
+
   <!-- JS Script -->
   <script defer src="/js/contacts.js"></script>
 </head>
@@ -42,20 +50,19 @@
 
 <body>
   <nav class="navbar bg-body-tertiary">
-  <div class="container flex-column align-items-start">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-      <i class="bi bi-journal-bookmark"></i> Contact Manager
-    </a>
-    <div class="d-flex align-items-center gap-3">
-      <span id="who" class="text-secondary"></span>
-      <a id="logoutBtn" href="/" role="button"
-         class="btn btn-outline-danger btn-sm ms-auto">
-        <i class="bi bi-box-arrow-right"></i> Log out
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <i class="bi bi-journal-bookmark"></i> Contact Manager
       </a>
+      <div class="d-flex align-items-center gap-3">
+        <span id="who" class="text-secondary"></span>
+        <a id="logoutBtn" href="/" role="button"
+           class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Log out
+        </a>
+      </div>
     </div>
-  </div>
-</nav>
-
+  </nav>
 
   <main class="container">
     <!-- Add / Edit -->
@@ -82,10 +89,10 @@
               <input id="cEmail" class="form-control" placeholder="(optional)">
             </div>
             <div class="col-12 d-flex gap-2">
-              <button id="saveBtn" class="btn btn-primary">
+              <button id="saveBtn" class="btn btn-outline-green">
                 <i class="bi bi-save me-1"></i> Save
               </button>
-              <button type="button" class="btn btn-secondary" onclick="resetForm()">
+              <button type="button" class="btn btn-outline-grey" onclick="resetForm()">
                 <i class="bi bi-eraser me-1"></i> Clear
               </button>
             </div>
@@ -96,26 +103,26 @@
     </section>
 
     <!-- Search + Results -->
-    <section>
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <h2 class="h5 m-0">Search</h2>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-secondary btn-sm" type="button" onclick="searchContacts()">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
-        </div>
-      </div>
-      <form onsubmit="searchContacts(event)" class="row g-2 mb-3">
-        <div class="col">
-          <input id="search" class="form-control" placeholder="name, phone, or email">
-        </div>
-        <div class="col-auto">
-          <button class="btn btn-outline-primary">
-            <i class="bi bi-search"></i> Search
-          </button>
-        </div>
-      </form>
+<section>
+  <div class="card">
+    <div class="card-body">
 
+      <!-- Header row -->
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="h5 m-0">Search</h2>
+</div>
+
+<!-- Search bar -->
+<form onsubmit="searchContacts(event)" class="mb-3">
+  <div class="input-group">
+    <input id="search" class="form-control" placeholder="name, phone, or email">
+    <button class="btn btn-outline-darkblue" type="submit">
+      <i class="bi bi-search"></i> Search
+    </button>
+  </div>
+</form>
+
+      <!-- Table -->
       <div class="table-responsive">
         <table class="table table-hover align-middle">
           <thead class="table-light">
@@ -132,7 +139,10 @@
           </tbody>
         </table>
       </div>
-    </section>
+
+    </div>
+  </div>
+</section>
   </main>
 
   <!-- Delete confirm modal -->
